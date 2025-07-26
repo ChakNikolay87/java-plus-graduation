@@ -41,6 +41,9 @@ spring:
 
         - id: event_service_route
           uri: lb://event-service
+      routes:
+        - id: main_service_route
+          uri: lb://main-service
           predicates:
             - Path=/**
 

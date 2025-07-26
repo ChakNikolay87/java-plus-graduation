@@ -12,6 +12,8 @@ import ru.practicum.dto.CreateEndpointHitDto;
 import ru.practicum.dto.ManyEndPointDto;
 import ru.practicum.dto.ReadEndpointHitDto;
 import ru.practicum.dto.TakeHitsDto;
+import ru.practicum.dto.TakeHitsDto;
+import ru.practicum.dto.ReadEndpointHitDto;
 import ru.practicum.service.EndpointHitService;
 
 import java.time.LocalDateTime;

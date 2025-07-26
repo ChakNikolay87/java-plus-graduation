@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import ru.practicum.dto.ReadEndpointHitDto;
 import ru.practicum.dto.TakeHitsDto;
+import ru.practicum.dto.TakeHitsDto;
+import ru.practicum.dto.ReadEndpointHitDto;
 import ru.practicum.model.EndpointHit;
 
 import java.sql.Timestamp;

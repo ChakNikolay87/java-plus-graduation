@@ -14,11 +14,11 @@
         <module>request-service</module>
         <module>user-service</module>
         <module>interaction-api</module>
+        <module>main-service</module>
     </modules>
 
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
-
     <properties>
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
