@@ -23,49 +23,40 @@ public class ExceptionController {
 
     private final ServiceInfo serviceInfo;
 
-    @ExceptionHandler
-    public ResponseEntity<ApiError> handleBadRequest(IllegalArgumentException ex, HttpServletRequest request) {
+    @ExceptionHandler({
+            IllegalArgumentException.class,
+            MissingServletRequestParameterException.class,
+            MethodArgumentNotValidException.class
+    })
+    public ResponseEntity<ApiError> handleBadRequest(Exception ex, HttpServletRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST, "Bad request");
     }
 
-    @ExceptionHandler
-    public ResponseEntity<ApiError> handleBadRequest(MissingServletRequestParameterException ex, HttpServletRequest request) {
-        return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST, "Bad request");
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ApiError> handleBadRequest(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST, "Bad request");
-    }
-
-    @ExceptionHandler
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(NotFoundException ex, HttpServletRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND, "Not found");
     }
 
-    @ExceptionHandler
-    public ResponseEntity<ApiError> handleBusinessError(ForbiddenActionException ex, HttpServletRequest request) {
+    @ExceptionHandler({
+            ForbiddenActionException.class,
+            DataIntegrityViolationException.class
+    })
+    public ResponseEntity<ApiError> handleBusinessError(Exception ex, HttpServletRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.CONFLICT, "Business error");
     }
 
-    @ExceptionHandler
-    public ResponseEntity<ApiError> handleBusinessError(DataIntegrityViolationException ex, HttpServletRequest request) {
-        return buildErrorResponse(ex, request, HttpStatus.CONFLICT, "Business error");
-    }
-
-    @ExceptionHandler
+    @ExceptionHandler(FeignException.class)
     public ResponseEntity<ApiError> handleFeignException(FeignException ex, HttpServletRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, "External error");
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleUnknownException(Exception ex, HttpServletRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error");
     }
 
     private ResponseEntity<ApiError> buildErrorResponse(Exception ex, HttpServletRequest request,
                                                         HttpStatus status, String message) {
-
         return buildErrorResponse(ex, new ApiError(serviceInfo.getServiceName(),
                 getRequestUrl(request), status.value(), message, ex));
     }
