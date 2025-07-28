@@ -37,6 +37,10 @@ public class PublicEventsController {
             @RequestParam(required = false, defaultValue = "10") int size,
             HttpServletRequest request) {
 
+        if (from < 0 || size <= 0) {
+            throw new IllegalArgumentException("Invalid pagination parameters: from=" + from + ", size=" + size);
+        }
+
         categories.forEach(category -> {
             if (category < 0)
                 throw new IllegalArgumentException("Invalid categories list");
@@ -71,6 +75,7 @@ public class PublicEventsController {
         List<EventShortDto> result = eventService.getEvents(searchEventsDto, lookEventDto);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<EventFullDto> getEvent(@PathVariable Long id, HttpServletRequest request) {
