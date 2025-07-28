@@ -38,7 +38,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     public List<EventShortDto> getEvents(SearchEventsDto filter, LookEventDto lookEventDto) {
         List<Event> events = eventRepository.findAll(EventSpecification.withFilters(filter));
 
-        if (Objects.equals(filter.getOnlyAvailable(), true)) {
+        if (Boolean.TRUE.equals(filter.getOnlyAvailable())) {
             List<Long> eventsIds = events.stream()
                     .map(Event::getId)
                     .toList();
@@ -62,25 +62,17 @@ public class PublicEventServiceImpl implements PublicEventService {
 
         if (filter.getSort() == null || EventSort.EVENT_DATE.equals(filter.getSort())) {
             eventShortDtoList = eventShortDtoList.stream()
-                    .sorted(Comparator.comparing(EventShortDto::getEventDate)) // Сортируем по eventDate
+                    .sorted(Comparator.comparing(EventShortDto::getEventDate))
                     .collect(Collectors.toCollection(ArrayList::new));
         } else {
             eventShortDtoList = eventShortDtoList.stream()
-                    .sorted(Comparator.comparingLong(EventShortDto::getViews).reversed()) // Сортируем по views
+                    .sorted(Comparator.comparingLong(EventShortDto::getViews).reversed())
                     .collect(Collectors.toCollection(ArrayList::new));
         }
 
-        int from = filter.getFrom();
-        int size = filter.getSize();
-
-        if (from < 0 || size <= 0)
-            throw new IllegalArgumentException("Invalid pagination parameters: " + from + ", " + size);
-        if (from >= eventShortDtoList.size())
-            return Collections.emptyList();
-
         List<EventShortDto> eventsPage = eventShortDtoList.stream()
-                .skip(from)
-                .limit(size)
+                .skip(filter.getFrom())
+                .limit(filter.getSize())
                 .collect(Collectors.toList());
 
         countViews(eventsPage, filter.getRangeStart(), filter.getRangeEnd(), true);
@@ -105,22 +97,25 @@ public class PublicEventServiceImpl implements PublicEventService {
                 .build());
 
         EventFullDto eventFullDto = eventMapper.toFullDto(event);
-        countViews(List.of(eventFullDto), null, null, true);
+
+        countViews(List.of(eventFullDto));
+
         return eventFullDto;
     }
 
     public void countViews(List<? extends EventViews> events, LocalDateTime dateStart, LocalDateTime dateEnd, boolean unique) {
-        if (events.isEmpty())
-            return;
-        if (Objects.isNull(dateStart))
+        if (events.isEmpty()) return;
+
+        if (Objects.isNull(dateStart)) {
             dateStart = LocalDateTime.of(1970, 1, 1, 1, 1, 1);
-        if (Objects.isNull(dateEnd))
+        }
+        if (Objects.isNull(dateEnd)) {
             dateEnd = LocalDateTime.of(3000, 1, 1, 1, 1, 1);
+        }
 
         List<String> uris = events.stream().map(e -> "/events/" + e.getId()).toList();
         List<ReadEndpointHitDto> hits = statsClient.getStats(dateStart, dateEnd, uris, unique);
 
-        // Заносим значения views в список events
         Map<Long, Long> workMap = new HashMap<>();
         for (ReadEndpointHitDto r : hits) {
             String decoded = r.getUri();
@@ -131,5 +126,9 @@ public class PublicEventServiceImpl implements PublicEventService {
         for (EventViews e : events) {
             e.setViews(workMap.getOrDefault(e.getId(), 0L));
         }
+    }
+
+    public void countViews(List<? extends EventViews> events) {
+        countViews(events, null, null, true);
     }
 }

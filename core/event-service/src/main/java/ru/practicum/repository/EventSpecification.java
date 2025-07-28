@@ -15,17 +15,20 @@ public class EventSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
             if (search.getText() != null && !search.getText().isBlank()) {
+                String pattern = "%" + search.getText().toLowerCase() + "%";
+
                 Predicate annotationMatch = criteriaBuilder.like(
-                    criteriaBuilder.lower(root.get("annotation")),
-                    "%" + search.getText().toLowerCase() + "%"
+                        criteriaBuilder.lower(root.get("annotation")),
+                        pattern
                 );
                 Predicate descriptionMatch = criteriaBuilder.like(
-                    criteriaBuilder.lower(root.get("description")),
-                    "%" + search.getText().toLowerCase() + "%"
+                        criteriaBuilder.lower(root.get("description")),
+                        pattern
                 );
 
                 predicates.add(criteriaBuilder.or(annotationMatch, descriptionMatch));
             }
+
 
             if (search.getCategories() != null && !search.getCategories().isEmpty()) {
                 predicates.add(root.get("category").get("id").in(search.getCategories()));
