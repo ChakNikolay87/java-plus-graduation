@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.event_service.config.RequestHeadersRegistry;
 import ru.practicum.event_service.dto.*;
 import ru.practicum.service.PublicEventService;
 
@@ -37,20 +38,22 @@ public class PublicEventsController {
             @RequestParam(required = false, defaultValue = "10") int size,
             HttpServletRequest request) {
 
-        if (from < 0 || size <= 0) {
-            throw new IllegalArgumentException("Invalid pagination parameters: from=" + from + ", size=" + size);
-        }
-
         categories.forEach(category -> {
-            if (category < 0)
-                throw new IllegalArgumentException("Invalid categories list");
+            if (category < 0) {
+                throw new IllegalArgumentException("Invalid category ID: " + category);
+            }
         });
 
         LocalDateTime start = Objects.isNull(rangeStart) ? LocalDateTime.now() : rangeStart;
         LocalDateTime end = Objects.nonNull(rangeEnd) ? rangeEnd : null;
 
-        if (Objects.nonNull(end) && !end.isAfter(start))
-            throw new IllegalArgumentException("Invalid dates");
+        if (Objects.nonNull(end) && !end.isAfter(start)) {
+            throw new IllegalArgumentException("Invalid date range: rangeEnd must be after rangeStart");
+        }
+
+        if (from < 0 || size <= 0) {
+            throw new IllegalArgumentException("Invalid pagination parameters: from=" + from + ", size=" + size);
+        }
 
         LookEventDto lookEventDto = LookEventDto.builder()
                 .id(null)
@@ -78,13 +81,8 @@ public class PublicEventsController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventFullDto> getEvent(@PathVariable Long id, HttpServletRequest request) {
-        log.info("Get event {}", id);
-
-        return ResponseEntity.ok(eventService.getEventById(id, LookEventDto.builder()
-                .id(null)
-                .uri(request.getRequestURI())
-                .ip(request.getRemoteAddr())
-                .build()));
+    public ResponseEntity<EventFullDto> getEvent(@PathVariable Long id, @RequestHeader(RequestHeadersRegistry.X_EWM_USER_ID) Long userId) {
+        log.info("Get event {} by user {}", id, userId);
+        return ResponseEntity.ok(eventService.getEventById(id, userId));
     }
 }
