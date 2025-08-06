@@ -17,6 +17,4 @@ public interface PrivateEventRequestService {
     ParticipationRequestDto createRequest(Long userId, Long eventId);
 
     ParticipationRequestDto cancelRequest(Long userId, Long requestId);
-
-    boolean isUserParticipatedInEvent(Long eventId, Long userId);
 }

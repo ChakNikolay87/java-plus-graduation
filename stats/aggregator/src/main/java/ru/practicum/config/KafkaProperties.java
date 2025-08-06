@@ -21,6 +21,7 @@ public class KafkaProperties {
     public static class ConsumerConfig {
         private Map<String, Object> properties;
         private String topic;
+        private String groupId;
     }
 
     @Getter

@@ -12,6 +12,7 @@ spring:
       discovery:
         enabled: true
         serviceId: config-server
+
 eureka:
   client:
     serviceUrl:
@@ -21,3 +22,10 @@ eureka:
     hostname: localhost
     instance-id: "${spring.application.name}:${random.value}"
     leaseRenewalIntervalInSeconds: 10
+
+kafka:
+  consumer:
+    topic: user-action-topic
+    group-id: aggregator-group
+  producer:
+    topic: similarity-topic

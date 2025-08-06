@@ -27,7 +27,10 @@ public class KafkaSimilarityProducer {
                 log.debug("Snapshot sent to Kafka: partition={}, offset={}",
                         result.getRecordMetadata().partition(),
                         result.getRecordMetadata().offset());
+            } else {
+                log.warn("Kafka send completed without exception, but result is null for snapshot: {}", snapshot);
             }
         });
+
     }
 }

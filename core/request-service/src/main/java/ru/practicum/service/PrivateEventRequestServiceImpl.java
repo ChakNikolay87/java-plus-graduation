@@ -142,10 +142,6 @@ public class PrivateEventRequestServiceImpl implements PrivateEventRequestServic
         return requestMapper.toDto(requestRepository.save(request));
     }
 
-    @Override
-    public boolean isUserParticipatedInEvent(Long eventId, Long userId) {
-        return requestRepository.findByUserIdAndEventId(userId, eventId).isPresent();
-    }
 
     private EventFullDto getEventOrThrow(Long eventId, Long userId) {
         try {

@@ -13,7 +13,6 @@ import ru.practicum.event_service.dto.NewEventDto;
 import ru.practicum.event_service.dto.UpdateEventUserRequest;
 import ru.practicum.event_service.model.EventState;
 import ru.practicum.event_service.model.EventStateAction;
-import ru.practicum.ewm.stats.proto.ActionTypeProto;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.mapper.LocationMapper;
 import ru.practicum.model.Category;
@@ -26,7 +25,6 @@ import ru.practicum.user_service.dto.UserDto;
 import ru.practicum.user_service.dto.UserShortDto;
 import ru.practicum.user_service.mapper.UserDtoMapper;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,7 +53,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Transactional(readOnly = true)
     public List<EventShortDto> getUserEvents(Long userId, int from, int size) {
         return eventMapper.toShortDtoList(
-            eventRepository.findByInitiator(userId, PageRequest.of(from / size, size))
+                eventRepository.findByInitiator(userId, PageRequest.of(from / size, size))
         );
     }
 
@@ -122,15 +120,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         event.setInitiator(userId);
 
         return eventMapper.toFullDto(eventRepository.save(event), userDto, null, null);
-    }
-
-    @Override
-    public void likeEvent(Long eventId, Long userId) {
-        if (privateRequestsClient.isUserParticipatedInEvent(userId, eventId)) {
-            collectorClient.sendUserAction(userId, eventId, ActionTypeProto.ACTION_LIKE, Instant.now());
-        } else {
-            throw new IllegalArgumentException("User with id " + userId + " not participated in event " + eventId);
-        }
     }
 
     private UserDto getUserById(Long userId) {

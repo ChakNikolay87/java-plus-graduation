@@ -11,6 +11,10 @@
 
     <artifactId>event-service</artifactId>
 
+    <properties>
+        <grpc.version>1.71.0</grpc.version>
+    </properties>
+
     <dependencies>
         <!-- Business Libraries-->
         <dependency>
@@ -97,17 +101,17 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
-            <version>1.71.0</version>
+            <version>${grpc.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
-            <version>1.71.0</version>
+            <version>${grpc.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
-            <version>1.71.0</version>
+            <version>${grpc.version}</version>
         </dependency>
         <!-- Core gRPC-библиотеки -->
         <dependency>

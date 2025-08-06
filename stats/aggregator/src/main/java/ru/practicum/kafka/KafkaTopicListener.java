@@ -18,8 +18,9 @@ public class KafkaTopicListener {
     private final UserActionAggregator userActionAggregator;
     private final KafkaSimilarityProducer kafkaSimilarityProducer;
 
-    @KafkaListener(topics = "${kafka.consumer.topic}",
-            groupId = "aggregator-group",
+    @KafkaListener(
+            topics = "${kafka.consumer.topic}",
+            groupId = "${kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory")
     public void handleEvent(UserActionAvro userActionAvro) {
         log.info("Received event: {}", userActionAvro);

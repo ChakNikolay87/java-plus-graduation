@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.entity.EventSimilarity;
 import ru.practicum.entity.UserAction;
 import ru.practicum.ewm.stats.proto.RecommendedEventProto;
+import ru.practicum.exception.InteractionCalculationException;
 import ru.practicum.repository.EventSimilarityRepository;
 import ru.practicum.repository.UserInteractionRepository;
 
@@ -138,7 +139,7 @@ public class RecommendationService {
             return results.stream();
         } catch (Exception e) {
             log.error("Error calculating interactions weight for eventIds={}", eventIds, e);
-            throw new RuntimeException("Failed to calculate interactions weight", e);
+            throw new InteractionCalculationException("Failed to calculate interactions weight", e);
         }
     }
 }
