@@ -11,6 +11,7 @@ import ru.practicum.event_service.dto.EventShortDto;
 import ru.practicum.event_service.dto.NewEventDto;
 import ru.practicum.event_service.dto.UpdateEventUserRequest;
 import ru.practicum.service.PrivateEventService;
+import ru.practicum.service.UserEventInteractionService;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ import java.util.List;
 public class PrivateEventsController {
 
     private final PrivateEventService eventService;
+    private final UserEventInteractionService userEventInteractionService;
 
     @GetMapping
     public ResponseEntity<List<EventShortDto>> getUserEvents(@PathVariable Long userId,
@@ -55,5 +57,12 @@ public class PrivateEventsController {
 
         log.info("Update user event {}", request);
         return ResponseEntity.ok(eventService.updateUserEvent(userId, eventId, request));
+    }
+
+    @PutMapping("/like")
+    public ResponseEntity<Void> likeEvent(@PathVariable Long userId, @PathVariable Long eventId) {
+        log.info("User {} attempting to like event {}", userId, eventId);
+        userEventInteractionService.likeEvent(userId, eventId);
+        return ResponseEntity.ok().build();
     }
 }

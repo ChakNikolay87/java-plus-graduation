@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.request_service.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request_service.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request_service.dto.ParticipationRequestDto;
+import ru.practicum.service.ParticipationService;
 import ru.practicum.service.PrivateEventRequestService;
 
 import java.util.List;
@@ -19,7 +20,9 @@ import java.util.List;
 @Slf4j
 public class PrivateRequestsController {
 
+    private final ParticipationService participationService;
     private final PrivateEventRequestService requestService;
+
 
     @GetMapping("/events/{eventId}/requests")
     public ResponseEntity<List<ParticipationRequestDto>> getEventRequests(@PathVariable Long userId,
@@ -55,5 +58,13 @@ public class PrivateRequestsController {
                                                                  @PathVariable Long requestId) {
         log.info("Cancel request {}", userId);
         return ResponseEntity.ok(requestService.cancelRequest(userId, requestId));
+    }
+
+    @GetMapping("/check-participation/{eventId}")
+    public ResponseEntity<Boolean> isUserParticipatedInEvent(@PathVariable("eventId") Long eventId,
+                                                             @PathVariable("userId") Long userId) {
+        log.info("Checking if user {} participated in event {}", userId, eventId);
+        boolean participated = participationService.isUserParticipatedInEvent(eventId, userId);
+        return ResponseEntity.ok(participated);
     }
 }
